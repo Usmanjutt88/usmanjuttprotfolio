@@ -38,11 +38,11 @@ function setPath<T>(obj: T, path: string, value: unknown): T {
   const root = clone(obj) as Record<string, unknown>;
   let cur = root;
   for (let i = 0; i < keys.length - 1; i++) {
-    const next = clone(cur[keys[i]]) as Record<string, unknown>;
-    cur[keys[i]] = next;
+    const next = clone(cur[keys[i]!]) as Record<string, unknown>;
+    cur[keys[i]!] = next;
     cur = next;
   }
-  cur[keys[keys.length - 1]] = value;
+  cur[keys[keys.length - 1]!] = value;
   return root as T;
 }
 
