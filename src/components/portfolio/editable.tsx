@@ -228,7 +228,7 @@ export function move<T>(arr: T[], i: number, d: number): T[] {
   const j = i + d;
   if (j < 0 || j >= arr.length) return arr;
   const a = [...arr];
-  [a[i], a[j]] = [a[j], a[i]];
+  const t = a[i] as T; a[i] = a[j] as T; a[j] = t;
   return a;
 }
 
@@ -250,7 +250,7 @@ export function Reveal({ children, className, delay = 0 }: { children: ReactNode
     if (!el) return;
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting) {
+        if (e?.isIntersecting) {
           el.classList.add("in");
           io.disconnect();
         }
