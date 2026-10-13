@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useSite } from "./store";
 import { AddButton, DynIcon, E, EditImage, ELink, IconPicker, ItemControls, Modal, Reveal, SectionHead, btnGhost, btnPrimary, inputCls, move } from "./editable";
 import { GithubIcon, Socials } from "./chrome";
-import { convertDriveVideoLink, uid, type Project } from "@/lib/content";
+import { convertDriveImageLink, convertDriveVideoLink, uid, type Project } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 const Section = ({ id, children, className }: { id: string; children: React.ReactNode; className?: string }) => (
@@ -90,7 +90,7 @@ export function About() {
   const { content, update } = useSite();
   return (
     <Section id="about">
-      <SectionHead eyebrow="About me" title="Who I am" />
+      <SectionHead k="about" />
       <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
         <Reveal>
           <div className="relative mx-auto max-w-sm">
@@ -125,7 +125,7 @@ export function Skills() {
   const { content, update } = useSite();
   return (
     <Section id="skills" className="bg-card/30">
-      <SectionHead eyebrow="Skills" title="What I work with" sub="A toolkit built through coursework, projects and curiosity." />
+      <SectionHead k="skills" />
       <div className="space-y-14">
         {content.skills.map((g, gi) => (
           <div key={g.id}>
@@ -160,7 +160,7 @@ export function Education() {
   const { content, update } = useSite();
   return (
     <Section id="education">
-      <SectionHead eyebrow="Journey" title="Education & Experience" />
+      <SectionHead k="education" />
       <div className="grid gap-12 lg:grid-cols-2">
         <div>
           <h3 className="mb-6 flex items-center gap-3 text-xl font-semibold"><GraduationCap className="h-6 w-6 text-primary" /> Education</h3>
@@ -207,7 +207,7 @@ export function Certifications() {
   const { content, update } = useSite();
   return (
     <Section id="certifications" className="bg-card/30">
-      <SectionHead eyebrow="Certifications" title="Credentials earned" />
+      <SectionHead k="certifications" />
       <div className="grid gap-5 md:grid-cols-3">
         {content.certifications.map((c, i) => (
           <Reveal key={c.id} delay={i * 80}>
@@ -229,7 +229,7 @@ export function Services() {
   const { content, update } = useSite();
   return (
     <Section id="services">
-      <SectionHead eyebrow="Services" title="How I can help" />
+      <SectionHead k="services" />
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {content.services.map((s, i) => (
           <Reveal key={s.id} delay={i * 80}>
@@ -277,7 +277,7 @@ export function Projects() {
   const list = content.projects.map((p, i) => ({ p, i })).filter(({ p }) => editing || f === "All" || p.category === f);
   return (
     <Section id="projects" className="bg-card/30">
-      <SectionHead eyebrow="Portfolio" title="Featured projects" />
+      <SectionHead k="projects" />
       <div className="mb-10 flex flex-wrap justify-center gap-2">
         {CATS.map((c) => (
           <button key={c} onClick={() => setF(c)} className={cn("rounded-full px-5 py-2 text-sm font-medium transition", f === c ? "bg-gradient-primary text-primary-foreground shadow-glow" : "border border-border text-muted-foreground hover:border-primary hover:text-primary")}>
@@ -336,7 +336,7 @@ export function Videos() {
   if (!editing && content.videos.length === 0) return null;
   return (
     <Section id="videos">
-      <SectionHead eyebrow="Showcase" title="Video highlights" sub="Walkthroughs and demos of my work." />
+      <SectionHead k="videos" />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {content.videos.map((v, i) => (
           <Reveal key={v.id}>
@@ -413,7 +413,7 @@ export function Contact() {
   ];
   return (
     <Section id="contact" className="bg-card/30">
-      <SectionHead eyebrow="Contact" title="Let's build something together" sub="Have a project or opportunity in mind? I'd love to hear about it." />
+      <SectionHead k="contact" />
       <div className="grid gap-8 lg:grid-cols-[1fr_1.4fr]">
         <Reveal className="space-y-4">
           {info.map((x) => (
@@ -439,6 +439,81 @@ export function Contact() {
           </form>
         </Reveal>
       </div>
+    </Section>
+  );
+}
+
+/* ---------------- Picture Gallery ---------------- */
+export function Pictures() {
+  const { content, update, editing } = useSite();
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ title: "", description: "", url: "" });
+  const [view, setView] = useState<string | null>(null);
+  const img = convertDriveImageLink(form.url.trim());
+  const ok = /^https:\/\//.test(img);
+  return (
+    <Section id="gallery">
+      <SectionHead k="pictures" />
+      {content.pictures.length === 0 && !editing && (
+        <p className="glass mx-auto max-w-md rounded-2xl p-8 text-center text-muted-foreground">No pictures yet</p>
+      )}
+      <div className="grid gap-6 md:grid-cols-2">
+        {content.pictures.map((p, i) => (
+          <Reveal key={p.id}>
+            <div className="glass group relative overflow-hidden rounded-2xl transition hover:border-primary/40 hover:shadow-glow">
+              {editing && (
+                <button onClick={() => update((c) => ({ ...c, pictures: c.pictures.filter((x) => x.id !== p.id) }))} className="absolute right-2 top-2 z-10 grid h-8 w-8 place-items-center rounded-lg bg-destructive text-destructive-foreground" aria-label="Delete picture">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              )}
+              {editing ? (
+                <EditImage path={`pictures.${i}.image`} alt={p.title} className="aspect-video bg-accent" />
+              ) : (
+                <button onClick={() => setView(p.image)} className="block aspect-video w-full overflow-hidden bg-accent" aria-label={`Open ${p.title}`}>
+                  <img src={p.image} alt={p.title} loading="lazy" referrerPolicy="no-referrer" className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+                </button>
+              )}
+              <div className="p-5">
+                <E as="h3" path={`pictures.${i}.title`} className="block font-semibold" />
+                <E as="p" path={`pictures.${i}.description`} multiline className="mt-1 block text-sm text-muted-foreground" />
+              </div>
+            </div>
+          </Reveal>
+        ))}
+        {editing && (
+          <button onClick={() => { setForm({ title: "", description: "", url: "" }); setOpen(true); }} className="flex min-h-48 items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-primary/50 text-sm font-semibold text-primary hover:bg-primary/10">
+            <Plus className="h-4 w-4" /> Add Picture
+          </button>
+        )}
+      </div>
+      {view && (
+        <div className="fixed inset-0 z-[150] grid place-items-center bg-background/90 p-4 backdrop-blur-md" onClick={() => setView(null)}>
+          <img src={view} alt="Full size" referrerPolicy="no-referrer" className="max-h-[90vh] max-w-full rounded-2xl shadow-glow" />
+        </div>
+      )}
+      <Modal open={open} onClose={() => setOpen(false)} className="max-w-lg">
+        <h3 className="text-lg font-semibold">Add picture</h3>
+        <div className="mt-4 space-y-3">
+          <input className={inputCls} placeholder="Picture title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+          <textarea rows={3} className={inputCls} placeholder="Short description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <input className={inputCls} placeholder="Google Drive image link" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} />
+          <p className="text-xs text-muted-foreground">Drive → Share → Anyone with link → Copy link.</p>
+          {ok && <img src={img} alt="Preview" referrerPolicy="no-referrer" className="aspect-video w-full rounded-xl object-cover" />}
+        </div>
+        <div className="mt-5 flex justify-end gap-2">
+          <button className={btnGhost} onClick={() => setOpen(false)}>Cancel</button>
+          <button
+            disabled={!form.title || !ok}
+            className={btnPrimary}
+            onClick={() => {
+              update((c) => ({ ...c, pictures: [...c.pictures, { id: uid(), title: form.title, description: form.description, image: img }] }));
+              setOpen(false);
+            }}
+          >
+            Save
+          </button>
+        </div>
+      </Modal>
     </Section>
   );
 }

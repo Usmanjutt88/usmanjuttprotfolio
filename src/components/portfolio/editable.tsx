@@ -267,14 +267,15 @@ export function Reveal({ children, className, delay = 0 }: { children: ReactNode
   );
 }
 
-export function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
+export function SectionHead({ k }: { k: string }) {
+  const { content, editing } = useSite();
+  const h = content.headers[k];
+  if (!h) return null;
   return (
     <Reveal className="mx-auto mb-14 max-w-2xl text-center">
-      <span className="inline-block rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-        {eyebrow}
-      </span>
-      <h2 className="mt-4 text-3xl font-bold sm:text-4xl md:text-5xl">{title}</h2>
-      {sub && <p className="mt-4 text-muted-foreground">{sub}</p>}
+      <E path={`headers.${k}.eyebrow`} className="inline-block rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-primary" />
+      <E as="h2" path={`headers.${k}.title`} className="mt-4 block text-3xl font-bold sm:text-4xl md:text-5xl" />
+      {(h.sub || editing) && <E as="p" path={`headers.${k}.sub`} multiline className="mt-4 block min-h-6 text-muted-foreground" />}
     </Reveal>
   );
 }

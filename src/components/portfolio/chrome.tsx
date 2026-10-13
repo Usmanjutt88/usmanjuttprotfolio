@@ -240,7 +240,7 @@ export function Footer() {
           <E as="p" path="footer.tagline" className="mt-4 block max-w-xs text-sm text-muted-foreground" multiline />
         </div>
         <div>
-          <h4 className="font-semibold">Quick links</h4>
+          <E as="h4" path="footer.linksTitle" className="block font-semibold" />
           <ul className="mt-4 grid grid-cols-2 gap-2 text-sm text-muted-foreground">
             {NAV.map((n) => (
               <li key={n}><a href={`#${n.toLowerCase()}`} className="hover:text-primary">{n}</a></li>
@@ -248,7 +248,7 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <h4 className="font-semibold">Connect</h4>
+          <E as="h4" path="footer.connectTitle" className="block font-semibold" />
           <Socials className="mt-4" />
         </div>
       </div>
