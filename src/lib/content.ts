@@ -14,6 +14,8 @@ export type Project = {
   demo: string;
   github: string;
 };
+export type Picture = { id: string; title: string; description: string; image: string };
+export type Header = { eyebrow: string; title: string; sub: string };
 export type Video = { id: string; title: string; description: string; url: string };
 
 export type SiteContent = {
@@ -35,8 +37,10 @@ export type SiteContent = {
   services: Service[];
   projects: Project[];
   videos: Video[];
+  pictures: Picture[];
+  headers: Record<string, Header>;
   contact: { phone: string; email: string; location: string };
-  footer: { tagline: string };
+  footer: { tagline: string; linksTitle: string; connectTitle: string };
 };
 
 export const uid = () => Math.random().toString(36).slice(2, 10);
@@ -162,8 +166,20 @@ export const defaultContent: SiteContent = {
     },
   ],
   videos: [],
+  pictures: [],
+  headers: {
+    about: { eyebrow: "About me", title: "Who I am", sub: "" },
+    skills: { eyebrow: "Skills", title: "What I work with", sub: "A toolkit built through coursework, projects and curiosity." },
+    education: { eyebrow: "Journey", title: "Education & Experience", sub: "" },
+    certifications: { eyebrow: "Certifications", title: "Credentials earned", sub: "" },
+    services: { eyebrow: "Services", title: "How I can help", sub: "" },
+    projects: { eyebrow: "Portfolio", title: "Featured projects", sub: "" },
+    videos: { eyebrow: "Showcase", title: "Video highlights", sub: "Walkthroughs and demos of my work." },
+    pictures: { eyebrow: "Gallery", title: "Picture highlights", sub: "Screenshots and visuals of my work." },
+    contact: { eyebrow: "Contact", title: "Let's build something together", sub: "Have a project or opportunity in mind? I'd love to hear about it." },
+  },
   contact: { phone: "0311-0003348", email: "uj6595890@gmail.com", location: "Vehari, Punjab, Pakistan" },
-  footer: { tagline: "Web Developer & BS Computer Science student crafting clean digital experiences." },
+  footer: { tagline: "Web Developer & BS Computer Science student crafting clean digital experiences.", linksTitle: "Quick links", connectTitle: "Connect" },
 };
 
 export function convertDriveImageLink(url: string) {
@@ -192,5 +208,9 @@ export function mergeContent(saved: unknown): SiteContent {
     links: { ...defaultContent.links, ...s.links },
     contact: { ...defaultContent.contact, ...s.contact },
     footer: { ...defaultContent.footer, ...s.footer },
+    pictures: Array.isArray(s.pictures) ? s.pictures : [],
+    headers: Object.fromEntries(
+      Object.entries(defaultContent.headers).map(([k, v]) => [k, { ...v, ...(s.headers?.[k] ?? {}) }]),
+    ),
   };
 }

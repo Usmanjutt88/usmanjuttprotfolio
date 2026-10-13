@@ -103,6 +103,8 @@
   cursor: text;
   &:hover { background: color-mix(in oklab, var(--primary) 10%, transparent); }
   &:focus { outline-style: solid; }
+  &:hover::after { content: " ✏️"; font-size: 0.7em; }
+  &:focus::after { content: none; }
 }
 
 @keyframes blob {
