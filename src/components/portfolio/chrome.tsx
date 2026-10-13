@@ -164,6 +164,7 @@ export function Loader() {
       const t = setTimeout(() => setGone(true), 500);
       return () => clearTimeout(t);
     }
+    return undefined;
   }, [loading]);
   if (gone) return null;
   return (
